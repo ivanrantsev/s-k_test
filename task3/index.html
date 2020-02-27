@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Task 3</title>
+</head>
+<body>
+    <nav class="nav">
+        <input class="nav__check" type="checkbox" id="showmenu"/>
+        <label class="nav__showmenu" for="showmenu">&#9776;</label>
+        <label class="nav__back" for="showmenu"></label>
+        <ul class="menu">
+            <li>
+                <a class="menu__item" href="#">Комплектующие</a>
+                <input class="menu__check" type="checkbox" id="menu1">
+                <label class="menu__showsub" for="menu1">&#9660;</label>
+                <ul class="menu__submenu">
+                    <li><a class="menu__item" href="#">Видеокарты</a></li>
+                    <li>
+                        <a class="menu__item" href="#">Периферия</a>
+                        <input class="menu__check" type="checkbox" id="menu4">
+                        <label class="menu__showsub" for="menu4">&#9660;</label>
+                        <ul class="menu__submenu">
+                            <li><a class="menu__item" href="#">Клавиатуры</a></li>
+                            <li><a class="menu__item" href="#">Мыши</a></li>
+                            <li><a class="menu__item" href="#">Геймпады</a></li>
+                        </ul>
+                    </li>
+                    <li><a class="menu__item" href="#">Процессоры</a></li>
+                </ul>
+            </li>
+            <li>
+                <a class="menu__item" href="#">Компьютеры</a>
+                <input class="menu__check" type="checkbox" id="menu2">
+                <label class="menu__showsub" for="menu2">&#9660;</label>
+                <ul class="menu__submenu">
+                    <li><a class="menu__item" href="#">Игровые</a></li>
+                    <li><a class="menu__item" href="#">Офисные</a></li>
+                    <li><a class="menu__item" href="#">Ноутбуки</a></li>
+                </ul>
+            </li>
+            <li>
+                <a class="menu__item" href="#">О нас</a>
+                <input class="menu__check" type="checkbox" id="menu3">
+                <label class="menu__showsub" for="menu3">&#9660;</label>
+                <ul class="menu__submenu">
+                    <li><a class="menu__item" href="#">Компания</a></li>
+                    <li><a class="menu__item" href="#">Контакты</a></li>
+                    <li><a class="menu__item" href="#">Доставка</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</body>
+</html>
