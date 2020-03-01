@@ -1,0 +1,27 @@
+.content {
+    display: flex;
+}
+
+select {
+    width: 200px;
+}
+
+.control {
+    width:140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.control > * {
+    width: 50px;
+    height: 30px;
+    border: 1px solid black;
+    margin: 10px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 30px;
+    font-size: 24px;
+}
+

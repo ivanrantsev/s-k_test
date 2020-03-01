@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div class="content">
+            <select id='leftMS' type="multiselect" multiple>
+                <option v-for='item in items' :key='item.name' v-if="!item.selected" @dblclick='toRight'>{{ item.name }}</option>
+            </select>
+            <div class="control">
+                <div id="toRight" @click = 'toRight'>&#8680;</div>
+                <div id="toLeft" @click = 'toLeft'>&#8678;</div>
+                <div id="allToRight" @click = 'allToRight'>&#8694;</div>
+                <div id="allToLeft" @click = 'allToLeft'>&#11057;</div>
+                <div id="sent" @click = 'sent'>&#9993;</div>
+            </div>
+            <select id="rightMS" type="multiselect" multiple>
+                <option v-for='item in items' :key='item.name' v-if="item.selected" @dblclick='toLeft'>{{ item.name }}</option>
+            </select>
+        </div>
+    </div>
+    <script>
+
+
+        new Vue ({
+            el: '#app',
+            data() {
+                return {
+                    items: null
+                }
+            },
+            methods: {
+                toRight: function() {
+                    let name = document.querySelector('#leftMS').value;
+                    for (item of this.items) {
+                        if (item.name === name) {
+                            Vue.set(item, 'selected', 'selected');
+                        }
+                    }
+
+                },
+
+                toLeft: function() {
+                    let name = document.querySelector('#rightMS').value;
+                    for (item of this.items) {
+                        if (item.name === name) {
+                            Vue.set(item, 'selected', false);
+                        }
+                    }
+                },
+
+                allToRight: function() {
+                    for (item of this.items) {
+                        Vue.set(item, 'selected', 'selected');
+                    }
+                },
+
+                allToLeft: function() {
+                    for (item of this.items) {
+                        Vue.set(item, 'selected', false);
+                    }
+                },
+
+                
+
+                sent: function() {
+                    for (item of this.items) {
+                        if (item.selected === 'selected') {
+                            console.log(item.name);
+                        }
+                    }
+                }
+
+            },
+            mounted() {
+                axios
+                    .get('appendix_1.json')
+                    .then(response => (this.items = response.data.data));
+            },
+        });
+    </script>
+</body>
+</html>

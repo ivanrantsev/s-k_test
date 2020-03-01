@@ -10,6 +10,7 @@
     <nav class="nav">
         <input class="nav__check" type="checkbox" id="showmenu"/>
         <label class="nav__showmenu" for="showmenu">&#9776;</label>
+        <label class="nav__showmenu__close" for="showmenu">&#10060;</label>
         <label class="nav__back" for="showmenu"></label>
         <ul class="menu">
             <li>
@@ -28,7 +29,15 @@
                             <li><a class="menu__item" href="#">Геймпады</a></li>
                         </ul>
                     </li>
-                    <li><a class="menu__item" href="#">Процессоры</a></li>
+                    <li>
+                        <a class="menu__item" href="#">Процессоры</a>
+                        <input class="menu__check" type="checkbox" id="menu5">
+                        <label class="menu__showsub" for="menu5">&#9660;</label>
+                        <ul class="menu__submenu">
+                            <li><a class="menu__item" href="#">Intel</a></li>
+                            <li><a class="menu__item" href="#">AMD</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
             <li>

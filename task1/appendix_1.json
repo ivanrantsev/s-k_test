@@ -1,0 +1,30 @@
+{
+    "name": "control_name",
+    "id": "control_id",
+    "label": "control_label",
+    "data": [
+        {
+            "name": "item_name1",
+            "value": "item_value1",
+            "selected": "selected"
+        },
+        {
+            "name": "item_name2",
+            "value": "item_value2"
+        },
+        {
+            "name": "item_name3",
+            "value": "item_value3"
+        },
+        {
+            "name": "item_name4",
+            "value": "item_value4",
+            "selected": "selected"
+        }
+    ]
+}
+
+
+
+
+
