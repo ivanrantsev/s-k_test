@@ -4,87 +4,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet"href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <title>Document</title>
 </head>
 <body>
     <div id="app">
-        <div class="content">
-            <select id='leftMS' type="multiselect" multiple>
-                <option v-for='item in items' :key='item.name' v-if="!item.selected" @dblclick='toRight'>{{ item.name }}</option>
+        <form class="content">
+            <select id='leftMS' multiple>
+                <option value="item1_value">item1</option>
+                <option value="item2_value">item2</option>
+                <option value="item3_value">item3</option>
+                <option value="item4_value">item4</option>
+                <option value="item5_value">item5</option>
             </select>
             <div class="control">
-                <div id="toRight" @click = 'toRight'>&#8680;</div>
-                <div id="toLeft" @click = 'toLeft'>&#8678;</div>
-                <div id="allToRight" @click = 'allToRight'>&#8694;</div>
-                <div id="allToLeft" @click = 'allToLeft'>&#11057;</div>
-                <div id="sent" @click = 'sent'>&#9993;</div>
+                <div id="toRight">&#8680;</div>
+                <div id="toLeft">&#8678;</div>
+                <div id="allToRight">&#8694;</div>
+                <div id="allToLeft">&#11057;</div>
+                <div id="sent">&#9993;</div>
             </div>
-            <select id="rightMS" type="multiselect" multiple>
-                <option v-for='item in items' :key='item.name' v-if="item.selected" @dblclick='toLeft'>{{ item.name }}</option>
-            </select>
-        </div>
+        </form>
     </div>
     <script>
 
+        class MultiSel {
+            constructor(sel) {
+                this.sel = sel
+            }
 
-        new Vue ({
-            el: '#app',
-            data() {
-                return {
-                    items: null
-                }
-            },
-            methods: {
-                toRight: function() {
-                    let name = document.querySelector('#leftMS').value;
-                    for (item of this.items) {
-                        if (item.name === name) {
-                            Vue.set(item, 'selected', 'selected');
+            check = false; //какой-то флаг который запретит ипользовать метод повторно
+
+            init() {
+                this.check = true; 
+                $('.control').css({'display':'flex'});
+                $('.content').append('<select id="rightMS" multiple></select>');
+                // ПЕРЕМЕННЫЕ У КОТОРЫХ НУЖНО РАСШИРИТЬ ОБЛАСТЬ ВИДИМОСТИ
+                let options = getSelectValues(this.sel);
+                let size = Object.keys(options).length;
+                drawAgain(options);
+                $('#leftMS').dblclick(function(event) {
+                    let target = event.target;
+                    if (target.tagName !== 'OPTION') {
+                        return;
+                    } else {
+                        toRightDbl(target, options);
+                    }
+                });
+                $('#rightMS').dblclick(function(event) {
+                    let target = event.target;
+                    if (target.tagName !== 'OPTION') {
+                        return;
+                    } else {
+                        toLeftDbl(target, options);
+                    }
+                });
+                $('#toRight').click(function(){
+                    let values = $('#leftMS').val();
+                    for (let i = 0; i < size; i++) {
+                        if (values.includes(options[i].value)) {
+                            options[i].selected = 'selected';
                         }
                     }
-
-                },
-
-                toLeft: function() {
-                    let name = document.querySelector('#rightMS').value;
-                    for (item of this.items) {
-                        if (item.name === name) {
-                            Vue.set(item, 'selected', false);
+                    drawAgain(options);
+                });
+                $('#toLeft').click(function(){
+                    let values = $('#rightMS').val();
+                    for (let i = 0; i < size; i++) {
+                        if (values.includes(options[i].value)) {
+                            delete options[i].selected;
                         }
                     }
-                },
-
-                allToRight: function() {
-                    for (item of this.items) {
-                        Vue.set(item, 'selected', 'selected');
+                    drawAgain(options);
+                });
+                $('#allToLeft').click(function() {
+                    for (let i = 0; i < size; i++) {
+                        if (options[i].selected === 'selected') {
+                            delete options[i].selected;
+                        }
                     }
-                },
-
-                allToLeft: function() {
-                    for (item of this.items) {
-                        Vue.set(item, 'selected', false);
+                    drawAgain(options);
+                });
+                $('#allToRight').click(function(){
+                    for (let i = 0; i < size; i++) {
+                        if (options[i].selected !== 'selected') {
+                            options[i].selected = 'selected';
+                        }
                     }
-                },
-
+                    drawAgain(options);
+                });
+                $('#sent').click(function() {
+                    for (let i = 0; i < size; i++) {
+                        if (options[i].selected === 'selected') {
+                            console.log(options[i].name);
+                        }
+                    }
+                });
                 
+            }
+            /*'это идея, которая естественнно не фурычит из-за методов'
+            create() {
+                $.getJSON('appendix_1.json', function(data) {
+                    $.getJSON('appendix_1.json', function(data) {
+                    Object.assign(options, data.data); // переберу циклом чтоб не перезаписывались
+                    drawAgain(options);
+                });
+            }*/
+        }
 
-                sent: function() {
-                    for (item of this.items) {
-                        if (item.selected === 'selected') {
-                            console.log(item.name);
-                        }
+        let leftMS = document.querySelector('#leftMS');
+        let rightMS = document.querySelector('#rightMS');
+
+        let twoSide = new MultiSel(leftMS);
+
+
+        //ГЛОБАЛЬНЫЕ ФУНКЦИИ ОТ КОТОРЫХ НУЖНО ИЗБАВЛЯТЬСЯ//
+        function getSelectValues(select) {
+            let result = {};
+            let options = select && select.options;
+            let count = 0;
+            for (let i=0; i<options.length; i++) {
+                let opt = options[i];
+                result[count] = {};
+                result[count].name = opt.text;
+                result[count].value = opt.value;
+                if (opt.selected) {
+                    if (result[count].selected === 'selected') {
+                        delete result[count].selected;
+                    } else {
+                        result[count].selected = 'selected';
                     }
+                    
                 }
+                count++;
+            }
+            return result;
+        }
 
-            },
-            mounted() {
-                axios
-                    .get('appendix_1.json')
-                    .then(response => (this.items = response.data.data));
-            },
-        });
+        
+        function drawAgain(obj) {
+            let size = Object.keys(obj).length;
+            $('#rightMS').html('');
+            $('#leftMS').html('');
+            for (let i = 0; i < size; i++) {
+                if (obj[i].selected === 'selected') {
+                    $('#rightMS').append(`<option value='${obj[i].value}' selected='selected'>${obj[i].name}</option>`)
+                } else {
+                    $('#leftMS').append(`<option value='${obj[i].value}'>${obj[i].name}</option>`)
+                }
+            }
+        }
+
+        function toRightDbl(el, obj) {
+            let size = Object.keys(obj).length;
+            for (let i = 0; i < size; i++) {
+                if (obj[i].name === el.textContent) {
+                    obj[i].selected = 'selected';
+                }
+                drawAgain(obj);
+            }
+        }
+
+        function toLeftDbl(el, obj) {
+            let size = Object.keys(obj).length;
+            for (let i = 0; i < size; i++) {
+                if (obj[i].name === el.textContent) {
+                    delete obj[i].selected;
+                }
+                drawAgain(obj);
+            }
+        }
+
+
+        
     </script>
 </body>
 </html>

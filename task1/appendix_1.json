@@ -4,21 +4,21 @@
     "label": "control_label",
     "data": [
         {
-            "name": "item_name1",
-            "value": "item_value1",
+            "name": "new_item_name1",
+            "value": "new_item_value1",
             "selected": "selected"
         },
         {
-            "name": "item_name2",
-            "value": "item_value2"
+            "name": "new_item_name2",
+            "value": "new_item_value2"
         },
         {
-            "name": "item_name3",
-            "value": "item_value3"
+            "name": "new_item_name3",
+            "value": "new_item_value3"
         },
         {
-            "name": "item_name4",
-            "value": "item_value4",
+            "name": "new_item_name4",
+            "value": "new_item_value4",
             "selected": "selected"
         }
     ]
