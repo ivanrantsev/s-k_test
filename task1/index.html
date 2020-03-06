@@ -34,84 +34,147 @@
             constructor(sel) {
                 this.sel = sel
             }
-
-            check = false; //какой-то флаг который запретит ипользовать метод повторно
+            opts = {};
+            check = false; 
 
             init() {
-                this.check = true; 
+                if (this.check) {
+                    return;
+                }
                 $('.control').css({'display':'flex'});
                 $('.content').append('<select id="rightMS" multiple></select>');
-                // ПЕРЕМЕННЫЕ У КОТОРЫХ НУЖНО РАСШИРИТЬ ОБЛАСТЬ ВИДИМОСТИ
-                let options = getSelectValues(this.sel);
-                let size = Object.keys(options).length;
-                drawAgain(options);
+                let result = {};
+                let items = this.sel && this.sel.options;
+                let count = 0;
+                for (let i=0; i<items.length; i++) {
+                    let opt = items[i];
+                    result[count] = {};
+                    result[count].name = opt.text;
+                    result[count].value = opt.value;
+                        if (opt.selected) {
+                            if (result[count].selected === 'selected') {
+                                delete result[count].selected;
+                            } else {
+                                result[count].selected = 'selected';
+                            } 
+                        }
+                    count++;
+                }
+                this.opts = Object.assign({}, result);
+                //let size = Object.keys(opts).length;
+                this.drawAgain();
+                this.check = true;
+
                 $('#leftMS').dblclick(function(event) {
                     let target = event.target;
                     if (target.tagName !== 'OPTION') {
                         return;
-                    } else {
-                        toRightDbl(target, options);
+                    } 
+                    let size = Object.keys(this.opts).length;
+                    for (let i = 0; i < size; i++) {
+                        if (this.opts[i].name === target.textContent) {
+                            this.opts[i].selected = 'selected';
+                        }
                     }
+                    this.drawAgain();
                 });
+
                 $('#rightMS').dblclick(function(event) {
                     let target = event.target;
                     if (target.tagName !== 'OPTION') {
                         return;
-                    } else {
-                        toLeftDbl(target, options);
+                    } 
+                    let size = Object.keys(this.opts).length;
+                    for (let i = 0; i < size; i++) {
+                        if (this.opts[i].name === target.textContent) {
+                            delete this.opts[i].selected;
+                        }       
                     }
+                    this.drawAgain();
                 });
+
+
                 $('#toRight').click(function(){
                     let values = $('#leftMS').val();
+                    let size = Object.keys(this.opts).length;
                     for (let i = 0; i < size; i++) {
-                        if (values.includes(options[i].value)) {
-                            options[i].selected = 'selected';
+                        if (values.includes(this.opts[i].value)) {
+                            this.opts[i].selected = 'selected';
                         }
                     }
-                    drawAgain(options);
+                    this.drawAgain();
                 });
+
                 $('#toLeft').click(function(){
                     let values = $('#rightMS').val();
+                    let size = Object.keys(this.opts).length;
                     for (let i = 0; i < size; i++) {
-                        if (values.includes(options[i].value)) {
-                            delete options[i].selected;
+                        if (values.includes(this.opts[i].value)) {
+                            delete this.opts[i].selected;
                         }
                     }
-                    drawAgain(options);
+                    this.drawAgain();
                 });
+
                 $('#allToLeft').click(function() {
+                    let size = Object.keys(this.opts).length;
                     for (let i = 0; i < size; i++) {
-                        if (options[i].selected === 'selected') {
-                            delete options[i].selected;
+                        if (this.opts[i].selected === 'selected') {
+                            delete this.opts[i].selected;
                         }
                     }
-                    drawAgain(options);
+                    this.drawAgain();
                 });
+
                 $('#allToRight').click(function(){
+                    let size = Object.keys(this.opts).length;
                     for (let i = 0; i < size; i++) {
-                        if (options[i].selected !== 'selected') {
-                            options[i].selected = 'selected';
+                        if (this.opts[i].selected !== 'selected') {
+                            this.opts[i].selected = 'selected';
                         }
                     }
-                    drawAgain(options);
+                    this.drawAgain();
                 });
+
                 $('#sent').click(function() {
+                    let size = Object.keys(this.opts).length;
                     for (let i = 0; i < size; i++) {
-                        if (options[i].selected === 'selected') {
-                            console.log(options[i].name);
+                        if (this.opts[i].selected === 'selected') {
+                            console.log(this.opts[i].name);
                         }
                     }
                 });
-                
             }
-            /*'это идея, которая естественнно не фурычит из-за методов'
+
             create() {
+                if (!this.check) {
+                    return
+                }
                 $.getJSON('appendix_1.json', function(data) {
-                    $.getJSON('appendix_1.json', function(data) {
-                    Object.assign(options, data.data); // переберу циклом чтоб не перезаписывались
-                    drawAgain(options);
+                    let size1 = Object.keys(this.opts).length;
+                    let size2 = Object.keys(data.data).length;
+                    let count = size1;
+                    for (let i = 0; i < size1 + size2; i++) {
+                        this.opts[count] = data.data[i];
+                        count++;
+                    }
+                    this.drawAgain();
                 });
-            }*/
+            }
+
+
+            drawAgain() {
+                let size = Object.keys(this.opts).length;
+                $('#rightMS').html('');
+                $('#leftMS').html('');
+                for (let i = 0; i < size; i++) {
+                    if (this.opts[i].selected === 'selected') {
+                        $('#rightMS').append(`<option value='${this.opts[i].value}' selected='selected'>${this.opts[i].name}</option>`);
+                    } else {
+                        $('#leftMS').append(`<option value='${this.opts[i].value}'>${this.opts[i].name}</option>`);
+                    }
+                }
+            }
         }
 
         let leftMS = document.querySelector('#leftMS');
@@ -120,62 +183,15 @@
         let twoSide = new MultiSel(leftMS);
 
 
-        //ГЛОБАЛЬНЫЕ ФУНКЦИИ ОТ КОТОРЫХ НУЖНО ИЗБАВЛЯТЬСЯ//
-        function getSelectValues(select) {
-            let result = {};
-            let options = select && select.options;
-            let count = 0;
-            for (let i=0; i<options.length; i++) {
-                let opt = options[i];
-                result[count] = {};
-                result[count].name = opt.text;
-                result[count].value = opt.value;
-                if (opt.selected) {
-                    if (result[count].selected === 'selected') {
-                        delete result[count].selected;
-                    } else {
-                        result[count].selected = 'selected';
-                    }
-                    
-                }
-                count++;
-            }
-            return result;
-        }
+        
+            
 
         
-        function drawAgain(obj) {
-            let size = Object.keys(obj).length;
-            $('#rightMS').html('');
-            $('#leftMS').html('');
-            for (let i = 0; i < size; i++) {
-                if (obj[i].selected === 'selected') {
-                    $('#rightMS').append(`<option value='${obj[i].value}' selected='selected'>${obj[i].name}</option>`)
-                } else {
-                    $('#leftMS').append(`<option value='${obj[i].value}'>${obj[i].name}</option>`)
-                }
-            }
-        }
+        
 
-        function toRightDbl(el, obj) {
-            let size = Object.keys(obj).length;
-            for (let i = 0; i < size; i++) {
-                if (obj[i].name === el.textContent) {
-                    obj[i].selected = 'selected';
-                }
-                drawAgain(obj);
-            }
-        }
+        
 
-        function toLeftDbl(el, obj) {
-            let size = Object.keys(obj).length;
-            for (let i = 0; i < size; i++) {
-                if (obj[i].name === el.textContent) {
-                    delete obj[i].selected;
-                }
-                drawAgain(obj);
-            }
-        }
+        
 
 
         
